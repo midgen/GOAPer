@@ -1,10 +1,11 @@
-#include "GOAPerEditor.h"
+/*#include "GOAPerEditor.h"*/
+#include "GOAPAtomPin.h"
 #include "KismetEditorUtilities.h"
 #include "STextComboBox.h"
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "GOAPAtom.h"
-#include "GOAPAtomPin.h"
+
 
 void SGOAPAtomPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 {

@@ -1,5 +1,5 @@
-#include "GOAPerEditor.h"
 #include "GOAPStateCustomization.h"
+/*#include "GOAPerEditor.h"*/
 #include "GOAPState.h"
 #include "STextComboBox.h"
 #include "SCheckBox.h"

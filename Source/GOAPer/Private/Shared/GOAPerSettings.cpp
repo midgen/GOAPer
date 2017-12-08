@@ -1,5 +1,4 @@
 #pragma once
-#include "GOAPer.h"
 #include "GOAPerSettings.h"
 
 

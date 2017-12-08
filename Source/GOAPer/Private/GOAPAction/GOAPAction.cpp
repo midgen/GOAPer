@@ -1,7 +1,7 @@
-#include "GOAPer.h"
+#include "GOAPAction.h"
 #include "GOAPAIController.h"
 #include "GameFramework/Actor.h"
-#include "GOAPAction.h"
+
 #include "GOAPAtom.h"
 
 UGOAPAction::UGOAPAction(class FObjectInitializer const & ObjectInitializer) : Super(ObjectInitializer)

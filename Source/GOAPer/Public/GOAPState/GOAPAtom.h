@@ -1,5 +1,4 @@
 #pragma once
-#include "GOAPer.h"
 #include "GOAPAtom.generated.h"
 
 USTRUCT(BlueprintType)

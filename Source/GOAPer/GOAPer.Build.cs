@@ -4,28 +4,18 @@ using UnrealBuildTool;
 
 public class GOAPer : ModuleRules
 {
-	public GOAPer(TargetInfo Target)
-	{
+	public GOAPer(ReadOnlyTargetRules Target) : base(Target)
+    {
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "Slate", "SlateCore", "InputCore", "AIModule", "UMG" });
 
-	PrivateIncludePathModuleNames.AddRange(
-		new string[] {
-			"Settings",
-        }
-	);
-	
-	PrivateIncludePaths.AddRange(
-			new string[] {
-				"GOAPer/Private",
-			}
-	);
-	
-	PrivateIncludePaths.AddRange(
-			new string[] {
-				"GOAPer/Public/Shared",
-			}
-	);
+        PrivateIncludePathModuleNames.AddRange(new string[] { "Settings", });
+
+        PrivateIncludePaths.AddRange(new string[] { "GOAPer/Private", });
+
+        PrivateIncludePaths.AddRange(new string[] { "GOAPer/Public/Shared", });
+
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
     }
 }

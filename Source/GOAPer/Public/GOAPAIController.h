@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "GOAPer.h"
 #include "AIController.h"
 #include "GOAPerSettings.h"
 #include "GOAPAction.h"

@@ -1,5 +1,3 @@
-
-#include "GOAPer.h"
 #include "GOAPPlanner.h"
 #include "GOAPNode.h"
 #include "GOAPAtom.h"
