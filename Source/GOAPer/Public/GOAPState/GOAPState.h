@@ -11,7 +11,7 @@ public:
 	FGOAPState() {};
 	~FGOAPState() {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GOAP")
 	TMap<uint8, bool> State;
 
 	FGOAPState& operator+(const FGOAPState& aOther)

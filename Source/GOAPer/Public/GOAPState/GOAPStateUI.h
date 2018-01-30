@@ -13,7 +13,7 @@ public:
 	FGOAPStateUI() {};
 	~FGOAPStateUI() {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GOAP")
 	TArray<FGOAPAtom> State;
 
 };
