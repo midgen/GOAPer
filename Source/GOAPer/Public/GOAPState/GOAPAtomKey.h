@@ -11,7 +11,7 @@ public:
 	FGOAPAtomKey() {};
 	~FGOAPAtomKey() {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP")
 	uint8 Key;
 
 };

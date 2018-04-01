@@ -26,7 +26,7 @@ private:
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP")
 	UGOAPerSettings* Settings = GetMutableDefault<UGOAPerSettings>();
 
 	// The current active Plan
