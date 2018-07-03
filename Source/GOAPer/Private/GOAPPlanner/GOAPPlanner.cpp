@@ -15,7 +15,7 @@ UGOAPPlanner::UGOAPPlanner(const FObjectInitializer &ObjectInitializer) :Super(O
 /   This needs a fairly comprehensive rework soon!
 /   Uses a very basic forward search from current state at present.
 **/
-TArray<TWeakObjectPtr<UGOAPAction>> UGOAPPlanner::Plan(UObject* aOuter, const int32 aMaxNodes, const uint8 aState, const bool aValue, TArray<UGOAPAction*>* aActions, FGOAPState* aCurrentState, AGOAPAIController& controller)
+TArray<TWeakObjectPtr<UGOAPAction>> UGOAPPlanner::Plan(UObject* aOuter, const int32 aMaxNodes, const uint8 aState, const bool aValue, const TArray<UGOAPAction*>& aActions, FGOAPState& aCurrentState, AGOAPAIController& controller)
 {
 	
 	OpenNodes.Empty();
@@ -25,7 +25,7 @@ TArray<TWeakObjectPtr<UGOAPAction>> UGOAPPlanner::Plan(UObject* aOuter, const in
 
 	// First build the graph, start building from current state
 	FGOAPNode startNode;
-	startNode.State = *aCurrentState;
+	startNode.State = aCurrentState;
 
 	OpenNodes.Push(startNode);
 

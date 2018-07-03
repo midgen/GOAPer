@@ -9,26 +9,26 @@ UGOAPAction::UGOAPAction(class FObjectInitializer const & ObjectInitializer) : S
 
 }
 
-bool UGOAPAction::ArePreconditionsSatisfied(AGOAPAIController* controller)
+bool UGOAPAction::ArePreconditionsSatisfied(AGOAPAIController* Controller) const
 {
 	if (PreConditions_Internal.State.Num() == 0)
 	{
 		return true;
 	}
 
-	return controller->GOAPState.IsSatisfiesState(PreConditions_Internal);
+	return Controller->myGOAPState.IsSatisfiesState(PreConditions_Internal);
 }
 
 // Checks if the Agent is within the Interaction Range of the TargetActor
-bool UGOAPAction::IsInRange(AGOAPAIController* controller)
+bool UGOAPAction::IsInRange(AGOAPAIController* Controller)
 {
 	// Otherwise, check the distance against the interaction range
-	return ((ActionTarget !=  nullptr) && (controller->GetPawn()->GetActorLocation() - ActionTarget->GetActorLocation()).Size() < InteractionRange);
+	return ((ActionTarget !=  nullptr) && (Controller->GetPawn()->GetActorLocation() - ActionTarget->GetActorLocation()).Size() < InteractionRange);
 }
 
-bool UGOAPAction::AreEffectsSatisfied(AGOAPAIController* controller)
+bool UGOAPAction::AreEffectsSatisfied(AGOAPAIController* Controller) const
 {
-	 return controller->GOAPState.IsSatisfiesState(Effects_Internal);
+	 return Controller->myGOAPState.IsSatisfiesState(Effects_Internal);
 }
 
 

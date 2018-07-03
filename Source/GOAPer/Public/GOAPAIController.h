@@ -30,23 +30,23 @@ public:
 	UGOAPerSettings* Settings = GetMutableDefault<UGOAPerSettings>();
 
 	// The current active Plan
-	TQueue<TWeakObjectPtr<UGOAPAction>>	ActionQueue;
+	TQueue<TWeakObjectPtr<UGOAPAction>>	myActionQueue;
 	// Current active action
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GOAPer")
-	TWeakObjectPtr<UGOAPAction>			CurrentAction;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GOAPer")
+	TWeakObjectPtr<UGOAPAction>			myCurrentAction;
 	// Current goal
-	FGOAPAtom CurrentGoal;
+	FGOAPAtom myCurrentGoal;
 	// Current state
-	FGOAPState GOAPState;
+	FGOAPState myGOAPState;
 	// Available actions for this agent
 	UPROPERTY()
-	TArray<UGOAPAction*>	GOAPActions;
+	TArray<UGOAPAction*>	myGOAPActions;
 	// Queue for managing EQS requests from actions
 	
-	TQueue<FGOAPEQSJob, EQueueMode::Mpsc>		EQSJobs;
-	FGOAPEQSJob EQSCurrentJob;
-	bool HasMadeEQSRequest;
-	FEnvQueryRequest EQSRequest;
+	TQueue<FGOAPEQSJob, EQueueMode::Mpsc>		myEQSJobs;
+	FGOAPEQSJob myEQSCurrentJob;
+	bool myHasMadeEQSRequest;
+	FEnvQueryRequest myEQSRequest;
 
 	/** GOAP actions that will be available to this agent **/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GOAPer")
@@ -66,10 +66,10 @@ public:
 
 	// Helpers for changing to MoveToStates
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	void SetMoveToStateWithTarget(AActor* aTargetActor, const float aAcceptanceRadius, const float WalkSpeed);
+	void SetMoveToStateWithTarget(AActor* TargetActor, const float AcceptanceRadius, const float WalkSpeed);
 	// Move to a location, sets movetotarget to current character
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	void SetMoveToStateWithLocation(const FVector aLocation, const float WalkSpeed);
+	void SetMoveToStateWithLocation(const FVector Location, const float WalkSpeed);
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
 	bool IsMoveCompleted() { return _IsMoveCompleted; }
 
@@ -88,7 +88,7 @@ public:
 	bool isStateSatisfied(FGOAPAtomKey Key, const bool Value);
 
 	// Callback for MoveTo completion
-	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+	virtual void OnMoveCompleted(FAIRequestID aRequestID, const FPathFollowingResult& aResult) override;
 
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
 	FString GetCurrentActionString();
@@ -109,6 +109,6 @@ public:
 	void EQSQueryFinished(TSharedPtr<FEnvQueryResult> Result);
 
 	// Weak pointer to MoveToTarget, used when moving to an actor to abort if the target is destroyed
-	TWeakObjectPtr<AActor> MoveToTargetActor;
+	TWeakObjectPtr<AActor> myMoveToTargetActor;
 
 };

@@ -23,13 +23,13 @@ public:
 		return *this;
 	}
 
-	bool IsSatisfiesState(const FGOAPState& aOther)
+	bool IsSatisfiesState(const FGOAPState& aOther) const
 	{
-		for (auto& elem : aOther.State)
+		for (const auto& elem : aOther.State)
 		{			
 			if (State.Contains(elem.Key))
 			{
-				bool* val = State.Find(elem.Key);
+				const bool* val = State.Find(elem.Key);
 				if (*val != elem.Value)
 				{
 					return false;
@@ -39,11 +39,11 @@ public:
 		return true;
 	}
 
-	bool IsStateSatisfied(const uint8 aState, const bool aValue)
+	bool IsStateSatisfied(const uint8 aState, const bool aValue) const
 	{
 		if (State.Contains(aState))
 		{
-			bool* val = State.Find(aState);
+			const bool* val = State.Find(aState);
 			if (*val == aValue)
 			{
 				return true;
@@ -53,7 +53,7 @@ public:
 		return false;
 	}
 
-	void SetState(const uint8 aState, const bool aValue)
+	void SetState(const uint8 aState, const bool aValue) 
 	{
 		State.Add(aState, aValue);
 	}
