@@ -6,7 +6,7 @@
 #include "EdGraph/EdGraphSchema.h"
 #include "GOAPAtom.h"
 
-
+// check bug here later~!
 void SGOAPAtomPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 {
 
