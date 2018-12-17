@@ -16,7 +16,7 @@
 	"Modules": [
 		{
 			"Name": "GOAPer",
-			"Type": "Developer",
+			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
