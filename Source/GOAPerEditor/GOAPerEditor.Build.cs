@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class GOAPerEditor : ModuleRules
 {
@@ -13,7 +14,7 @@ public class GOAPerEditor : ModuleRules
 	
 	PrivateIncludePaths.AddRange(new string[] { "GOAPerEditor/Private",	} );
 	
-	PrivateIncludePaths.AddRange(new string[] { "GOAPerEditor/Public/Shared", } );
+	PrivateIncludePaths.AddRange(new string[] { Path.Combine(ModuleDirectory, "Public") } );
 
     PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
