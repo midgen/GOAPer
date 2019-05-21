@@ -22,10 +22,9 @@ public class GOAPerEditor : ModuleRules
 
     PrivateIncludePaths.AddRange(
     new string[] {
-                Path.Combine(ModuleDirectory, "Private")
-        
-        // ... add public include paths required here ...
+            Path.Combine(ModuleDirectory, "Private")
     });
+        
 
     PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 

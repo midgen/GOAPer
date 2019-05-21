@@ -50,7 +50,9 @@ void FGOAPStateCustomization::CustomizeHeader(TSharedRef<class IPropertyHandle> 
 	{
 		Key = 0;
 	}
-	
+
+	ensureMsgf(AvailableOptions.Num() > 0, TEXT("No state options configured! Set them in Settings -> Project Settings -> Plugins -> GOAPer"));
+
 	SelectedString = GOAPSettings->GetStringForByte(Key);
 
 	check(KeyHandle.IsValid());
