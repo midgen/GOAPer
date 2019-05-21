@@ -44,7 +44,7 @@ void AGOAPAIController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// If we don't have a current action waiting....
-	if (myCurrentAction == nullptr)
+	if (CurrentAction == nullptr)
 	{
 		// If there's nothing queued, we need to try and form a plan
 		if (myActionQueue.IsEmpty())
@@ -59,39 +59,39 @@ void AGOAPAIController::Tick(float DeltaTime)
 					return;
 				}
 				// Select the head action
-				myActionQueue.Dequeue(myCurrentAction);
+				myActionQueue.Dequeue(CurrentAction);
 			}
 		}
 		else // otherwise pop the next action off the queue
 		{
-			myActionQueue.Dequeue(myCurrentAction);
+			myActionQueue.Dequeue(CurrentAction);
 		}
 	}
-	if (myCurrentAction->IsValidLowLevel()) // Should have an action by now, check anyway
+	if (CurrentAction->IsValidLowLevel()) // Should have an action by now, check anyway
 	{
 		// If preconditions for current action aren't met, the plan is invalid, clear it
-		if (!myCurrentAction->ArePreconditionsSatisfied(this))
+		if (!CurrentAction->ArePreconditionsSatisfied(this))
 		{
-			myCurrentAction = nullptr;
+			CurrentAction = nullptr;
 			myActionQueue.Empty();
 		}
 		// If effects are satisfied, just complete the action without clearing plan
-		else if (myCurrentAction->AreEffectsSatisfied(this))
+		else if (CurrentAction->AreEffectsSatisfied(this))
 		{
-			myCurrentAction = nullptr;
+			CurrentAction = nullptr;
 		}
 		else
 		{
 			// Otherwise, crack on with it
-			myCurrentAction->TimeSinceLastTick += DeltaTime;
-			if (myCurrentAction->TimeSinceLastTick > myCurrentAction->TickRate)
+			CurrentAction->TimeSinceLastTick += DeltaTime;
+			if (CurrentAction->TimeSinceLastTick > CurrentAction->TickRate)
 			{
-				myCurrentAction->TimeSinceLastTick = 0.0f;
+				CurrentAction->TimeSinceLastTick = 0.0f;
 				// Run the action, if it returns true, it's complete,
-				if (myCurrentAction->Execute(this, DeltaTime))
+				if (CurrentAction->Execute(this, DeltaTime))
 				{
 					// And clear the action so the next will be popped from the queue on next tick
-					myCurrentAction = nullptr;
+					CurrentAction = nullptr;
 				}
 			}
 		}
@@ -132,7 +132,7 @@ void AGOAPAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollo
 void AGOAPAIController::ClearCurrentActionAndPlan()
 {
 	// clearing the action and queue will cause IdleState to form a new plan
-	myCurrentAction = nullptr;
+	CurrentAction = nullptr;
 	myActionQueue.Empty();
 }
 
@@ -210,9 +210,9 @@ bool AGOAPAIController::BuildActionPlanForCurrentGoal()
 
 FString AGOAPAIController::GetCurrentActionString()
 {
-	if (myCurrentAction != nullptr)
+	if (CurrentAction != nullptr)
 	{
-		return myCurrentAction->ActionDescription;
+		return CurrentAction->ActionDescription;
 	}
 	else
 	{

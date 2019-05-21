@@ -35,8 +35,8 @@ public:
 	// Called each frame while this is the active action, returns true when complete
 	//   Can/should be overridden in Blueprint
 	UFUNCTION(BlueprintNativeEvent, Category = "GOAP Action")
-	void UpdateCost(AGOAPAIController* aController);
-	virtual void UpdateCost_Implementation(AGOAPAIController* aController) { };
+	void UpdateCost(AGOAPAIController* Controller);
+	virtual void UpdateCost_Implementation(AGOAPAIController* Controller) { };
 
 	//Text description of the action for debugging
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GOAP Action")

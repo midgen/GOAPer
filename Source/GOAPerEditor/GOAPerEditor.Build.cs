@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class GOAPerEditor : ModuleRules
 {
@@ -10,10 +11,21 @@ public class GOAPerEditor : ModuleRules
     PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine",  "GOAPer", "InputCore"});
 
     PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "PropertyEditor", "EditorStyle", "UnrealEd", "GraphEditor", "BlueprintGraph" });
-	
-	PrivateIncludePaths.AddRange(new string[] { "GOAPerEditor/Private",	} );
-	
-	PrivateIncludePaths.AddRange(new string[] { "GOAPerEditor/Public/Shared", } );
+
+
+    PublicIncludePaths.AddRange(
+    new string[] {
+                Path.Combine(ModuleDirectory, "Public")
+        // ... add public include paths required here ...
+    });
+
+
+    PrivateIncludePaths.AddRange(
+    new string[] {
+                Path.Combine(ModuleDirectory, "Private")
+        
+        // ... add public include paths required here ...
+    });
 
     PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 

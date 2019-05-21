@@ -33,7 +33,9 @@ TArray<TWeakObjectPtr<UGOAPAction>> UGOAPPlanner::Plan(UObject* aOuter, const in
 	{
 		ClosedNodes.Push(OpenNodes.Pop(false));
 
-		FGOAPNode& workNode = ClosedNodes[ClosedNodes.Num() - 1];
+		int32 workNodeIndex = ClosedNodes.Num() - 1;
+
+		FGOAPNode& workNode = ClosedNodes[workNodeIndex];
 
 		// Don't continue searching this branch if state is already satisfied
 		if (!workNode.State.IsStateSatisfied(aState, aValue))
@@ -43,14 +45,18 @@ TArray<TWeakObjectPtr<UGOAPAction>> UGOAPPlanner::Plan(UObject* aOuter, const in
 			{
 				// Make sure we aren't caught in an action loop
 				// e.g. EnterCover->ExitCover->EnterCover->ExitCover
-				if (!workNode.Parent.Action.IsValid() || !workNode.Parent.Node->Parent.Action.IsValid() || action != workNode.Parent.Node->Parent.Action)
+				if (!workNode.Parent.Action.IsValid() || !ClosedNodes[workNode.Parent.NodeIndex].Parent.Action.IsValid() || action != ClosedNodes[ClosedNodes[workNode.Parent.NodeIndex].Parent.NodeIndex].Parent.Action)
 				{
+					//FGOAPNode& grandParentNode = ClosedNodes[ClosedNodes[workNode.Parent.NodeIndex].Parent.NodeIndex].Parent.Action;
+					//if (action == grandParentNode.Parent.Action) {
+					//	continue;
+					//}
 					// The new node is the previous state plus the effects of the action that got us here
 					FGOAPNode newNode;
 					newNode.State = workNode.State;
 					newNode.State = newNode.State + action->Effects_Internal;
 					newNode.Parent.Action = action;
-					newNode.Parent.Node = &workNode;
+					newNode.Parent.NodeIndex = workNodeIndex;
 					OpenNodes.Push(newNode);
 				}
 			}
@@ -87,7 +93,7 @@ TArray<TWeakObjectPtr<UGOAPAction>> UGOAPPlanner::Plan(UObject* aOuter, const in
 		while(CurrentNode->Parent.Action.IsValid())
 		{
 			CandidatePlan.Push(CurrentNode->Parent.Action);
-			CurrentNode = CurrentNode->Parent.Node;
+			CurrentNode = &ClosedNodes[CurrentNode->Parent.NodeIndex];
 		}
 		ValidPlans.Push(CandidatePlan);
 	}

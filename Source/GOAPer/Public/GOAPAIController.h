@@ -33,7 +33,7 @@ public:
 	TQueue<TWeakObjectPtr<UGOAPAction>>	myActionQueue;
 	// Current active action
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GOAPer")
-	TWeakObjectPtr<UGOAPAction>			myCurrentAction;
+	TWeakObjectPtr<UGOAPAction>			CurrentAction;
 	// Current goal
 	FGOAPAtom myCurrentGoal;
 	// Current state

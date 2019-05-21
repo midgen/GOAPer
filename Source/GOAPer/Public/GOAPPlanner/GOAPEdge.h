@@ -15,6 +15,7 @@ public:
 	~FGOAPEdge() {};
 
 	TWeakObjectPtr<UGOAPAction> Action;
-	FGOAPNode* Node = nullptr;
+	//FGOAPNode* Node;
+	int32 NodeIndex;
 
 };
