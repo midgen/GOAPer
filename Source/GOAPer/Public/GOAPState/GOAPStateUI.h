@@ -1,5 +1,5 @@
 #pragma once
-#include "GOAPAtom.h"
+#include "GOAPStateProperty.h"
 #include "GOAPStateUI.generated.h"
 
 // We have a different struct for configuration purposes
@@ -14,6 +14,6 @@ public:
 	~FGOAPStateUI() {};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GOAP")
-	TArray<FGOAPAtom> State;
+	TArray<FGOAPStateProperty> State;
 
 };

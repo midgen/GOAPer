@@ -1,6 +1,12 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "GOAPState.generated.h"
+
+
+// World state is represented
+
+typedef TPair<uint8, bool> TWorldProperty;
 
 USTRUCT(BlueprintType)
 struct GOAPER_API FGOAPState
@@ -11,50 +17,78 @@ public:
 	FGOAPState() {};
 	~FGOAPState() {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GOAP")
-	TMap<uint8, bool> State;
+	TArray<TWorldProperty> State;
 
-	FGOAPState& operator+(const FGOAPState& aOther)
+	FGOAPState& operator+=(const FGOAPState& aOther)
 	{
-		for (auto& elem : aOther.State)
+		for (const TWorldProperty& elem : aOther.State)
 		{
-			State.Add(elem.Key, elem.Value);
+			SetState(elem.Key, elem.Value);
 		}
 		return *this;
 	}
 
-	bool IsSatisfiesState(const FGOAPState& aOther) const
+	bool SatisfiesState(const FGOAPState& aOther) const
 	{
-		for (const auto& elem : aOther.State)
+		for (const TWorldProperty& otherItem : aOther.State)
 		{			
-			if (State.Contains(elem.Key))
+			for (const TWorldProperty& item : State)
 			{
-				const bool* val = State.Find(elem.Key);
-				if (*val != elem.Value)
+				if (item.Key == otherItem.Key)
 				{
-					return false;
+					if (item.Value != otherItem.Value)
+						return false;
 				}
 			}
 		}
 		return true;
 	}
 
-	bool IsStateSatisfied(const uint8 aState, const bool aValue) const
+	bool SatisfiesProperty(const uint8 aPropertyId, const bool aValue) const
 	{
-		if (State.Contains(aState))
+		for (const TWorldProperty& item : State)
 		{
-			const bool* val = State.Find(aState);
-			if (*val == aValue)
+			if (item.Key == aPropertyId)
 			{
-				return true;
-			}
+				if (item.Value == aValue)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 
+			}
 		}
+
 		return false;
 	}
 
-	void SetState(const uint8 aState, const bool aValue) 
+	void SetState(const uint8 aPropertyId, const bool aValue) 
 	{
-		State.Add(aState, aValue);
+		for (TWorldProperty& item : State)
+		{
+			if (item.Key == aPropertyId)
+			{
+				item.Value = aValue;
+				return;
+			}
+		}
+
+		State.Add(TWorldProperty(aPropertyId, aValue));
+	}
+
+	bool GetPropertyValue(const uint8 aPropertyId) const
+	{
+		for (const TWorldProperty& item : State)
+		{
+			if (item.Key == aPropertyId)
+			{
+				return item.Value;
+			}
+		}
+
+		return false;
 	}
 };

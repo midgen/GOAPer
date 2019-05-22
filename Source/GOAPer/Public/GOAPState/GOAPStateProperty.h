@@ -1,15 +1,17 @@
 #pragma once
-#include "GOAPAtom.generated.h"
+
+#include "CoreMinimal.h"
+#include "GOAPStateProperty.generated.h"
 
 USTRUCT(BlueprintType)
-struct GOAPER_API FGOAPAtom
+struct GOAPER_API FGOAPStateProperty
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	FGOAPAtom(uint8 aKey, bool aValue) : Key(aKey), Value(aValue) {};
-	FGOAPAtom() {};
-	~FGOAPAtom() {};
-	bool operator==(const FGOAPAtom& aOther)
+	FGOAPStateProperty(uint8 aKey, bool aValue) : Key(aKey), Value(aValue) {};
+	FGOAPStateProperty() {};
+	~FGOAPStateProperty() {};
+	bool operator==(const FGOAPStateProperty& aOther)
 	{
 		return aOther.Key == Key && aOther.Value == Value;
 	}

@@ -3,6 +3,7 @@
 
 #include "GOAPAction.h"
 #include "GOAPNode.h"
+#include "CoreMinimal.h"
 #include "GOAPPlanner.generated.h"
 
 class AGOAPAIController;
@@ -19,9 +20,8 @@ class GOAPER_API UGOAPPlanner : public UObject
 	TArray<FGOAPNode> OpenNodes;
 	UPROPERTY()
 	TArray<FGOAPNode> ClosedNodes;
-	UPROPERTY()
-	TArray<TWeakObjectPtr<UGOAPAction>> GOAPPlan;
+
 public:
 
-	TArray<TWeakObjectPtr<UGOAPAction>> Plan(UObject* aOuter, const int32 aMaxNodes, const uint8 aState, const bool aValue, const TArray<UGOAPAction*>& aActions, FGOAPState& aCurrentState, AGOAPAIController& controller);
+	bool Plan(UObject* aOuter, const int32 aMaxNodes, const uint8 aState, const bool aValue, const TArray<UGOAPAction*>& aActions, FGOAPState& aCurrentState, AGOAPAIController& controller, TArray<TWeakObjectPtr<UGOAPAction>>& aOutPlan);
 };

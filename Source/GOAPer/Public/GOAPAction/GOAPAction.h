@@ -1,5 +1,5 @@
 #pragma once
-#include "GOAPAtom.h"
+#include "GOAPStateProperty.h"
 #include "GOAPState.h"
 #include "GOAPStateUI.h"
 #include "GOAPAction.generated.h"
@@ -74,13 +74,13 @@ public:
 	FGOAPStateUI Effects;
 
 	// Helpers for the use of EQS queries
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GOAP Action")
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "GOAP Action")
 	bool IsEQSQueryRequestPending;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GOAP Action")
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "GOAP Action")
 	bool IsEQSResultsAvailable;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GOAP Action")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "GOAP Action")
 	TArray<AActor*> QueryResultsActor;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GOAP Action")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "GOAP Action")
 	TArray<FVector> QueryResultsLocation;
 
 	// Configures the action, copying data from UI structs to Internal

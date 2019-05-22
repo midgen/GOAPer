@@ -1,15 +1,17 @@
 #pragma once
-#include "GOAPAtomKey.generated.h"
+
+#include "CoreMinimal.h"
+#include "GOAPPropertyId.generated.h"
 
 USTRUCT(BlueprintType)
-struct GOAPER_API FGOAPAtomKey
+struct GOAPER_API FGOAPPropertyId
 {
 	GENERATED_USTRUCT_BODY()
-public:
+
 	/** Struct is required to be able to customise blueprint pins **/
-	FGOAPAtomKey(uint8 aKey) : Key(aKey) {};
-	FGOAPAtomKey() {};
-	~FGOAPAtomKey() {};
+	FGOAPPropertyId(uint8 aKey) : Key(aKey) {};
+	FGOAPPropertyId() {};
+	~FGOAPPropertyId() {};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP")
 	uint8 Key;
