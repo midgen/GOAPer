@@ -11,10 +11,20 @@ public class GOAPerEditor : ModuleRules
     PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine",  "GOAPer", "InputCore"});
 
     PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "PropertyEditor", "EditorStyle", "UnrealEd", "GraphEditor", "BlueprintGraph" });
-	
-	PrivateIncludePaths.AddRange(new string[] { "GOAPerEditor/Private",	} );
-	
-	PrivateIncludePaths.AddRange(new string[] { Path.Combine(ModuleDirectory, "Public") } );
+
+
+    PublicIncludePaths.AddRange(
+    new string[] {
+                Path.Combine(ModuleDirectory, "Public")
+        // ... add public include paths required here ...
+    });
+
+
+    PrivateIncludePaths.AddRange(
+    new string[] {
+            Path.Combine(ModuleDirectory, "Private")
+    });
+        
 
     PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 

@@ -4,7 +4,7 @@
 #include "STextComboBox.h"
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
-#include "GOAPAtom.h"
+#include "GOAPStateProperty.h"
 
 
 void SGOAPAtomPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)

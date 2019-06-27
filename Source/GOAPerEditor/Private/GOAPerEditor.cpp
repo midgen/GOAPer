@@ -19,7 +19,7 @@ void FGOAPerEditorModule::StartupModule()
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
 	//Custom properties
-	PropertyModule.RegisterCustomPropertyTypeLayout("GOAPAtom", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FGOAPStateCustomization::MakeInstance));
+	PropertyModule.RegisterCustomPropertyTypeLayout("GOAPStateProperty", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FGOAPStateCustomization::MakeInstance));
 
 	//create your factory and shared pointer to it.
 	TSharedPtr<FGOAPAtomPinFactory> GOAPAtomPinFactory = MakeShareable(new FGOAPAtomPinFactory());
@@ -32,7 +32,7 @@ void FGOAPerEditorModule::ShutdownModule()
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
 	//Custom properties
-	PropertyModule.UnregisterCustomPropertyTypeLayout("GOAPAtom");
+	PropertyModule.UnregisterCustomPropertyTypeLayout("GOAPStateProperty");
 	UE_LOG(GOAPerEditor, Warning, TEXT("GOAPerEditorModule: Log Ended"));
 }
 

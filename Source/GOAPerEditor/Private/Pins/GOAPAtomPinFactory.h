@@ -3,7 +3,7 @@
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "EdGraphSchema_K2.h"
-#include "GOAPAtomKey.h"
+#include "GOAPPropertyId.h"
 #include "GOAPAtomPin.h"
 #include "EdGraphUtilities.h"
 
@@ -15,7 +15,7 @@ class FGOAPAtomPinFactory : public FGraphPanelPinFactory
 		const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
 
 		if (InPin->PinType.PinCategory == K2Schema->PC_Struct
-			&& InPin->PinType.PinSubCategoryObject == FGOAPAtomKey::StaticStruct())
+			&& InPin->PinType.PinSubCategoryObject == FGOAPPropertyId::StaticStruct())
 		{
 			return SNew(SGOAPAtomPin, InPin); 
 		}

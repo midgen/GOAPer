@@ -8,7 +8,8 @@
 #include "GOAPState.h"
 #include "GOAPStateUI.h"
 #include "GOAPPlanner.h"
-#include "GOAPAtomKey.h"
+#include "GOAPStateProperty.h"
+#include "GOAPPropertyId.h"
 #include "GOAPEQSJob.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameFramework/Actor.h"
@@ -26,27 +27,27 @@ private:
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP")
-	UGOAPerSettings* Settings = GetMutableDefault<UGOAPerSettings>();
+	UPROPERTY()
+	UGOAPerSettings* mySettings = GetMutableDefault<UGOAPerSettings>();
 
 	// The current active Plan
-	TQueue<TWeakObjectPtr<UGOAPAction>>	ActionQueue;
+	TQueue<TWeakObjectPtr<UGOAPAction>>	myActionQueue;
 	// Current active action
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GOAPer")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TWeakObjectPtr<UGOAPAction>			CurrentAction;
 	// Current goal
-	FGOAPAtom CurrentGoal;
+	FGOAPStateProperty myCurrentGoal;
 	// Current state
-	FGOAPState GOAPState;
+	FGOAPState myGOAPState;
 	// Available actions for this agent
 	UPROPERTY()
-	TArray<UGOAPAction*>	GOAPActions;
+	TArray<UGOAPAction*>	myGOAPActions;
 	// Queue for managing EQS requests from actions
 	
-	TQueue<FGOAPEQSJob, EQueueMode::Mpsc>		EQSJobs;
-	FGOAPEQSJob EQSCurrentJob;
-	bool HasMadeEQSRequest;
-	FEnvQueryRequest EQSRequest;
+	TQueue<FGOAPEQSJob, EQueueMode::Mpsc>		myEQSJobs;
+	FGOAPEQSJob myEQSCurrentJob;
+	bool myHasMadeEQSRequest;
+	FEnvQueryRequest myEQSRequest;
 
 	/** GOAP actions that will be available to this agent **/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GOAPer")
@@ -56,20 +57,22 @@ public:
 	FGOAPStateUI StartingState;
 	/** Default starting goal of the agent **/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GOAPer")
-	FGOAPAtom DefaultGoal;
+	FGOAPStateProperty DefaultGoal;
 	/** Maximum number of nodes in the planning graph, prevents crash if graph gets stuck in a loop */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GOAPer")
 	int32 MaxGraphNodes = 256;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GOAPer")
+	bool DebugDrawCurrentState = false;
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 	// Helpers for changing to MoveToStates
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	void SetMoveToStateWithTarget(AActor* aTargetActor, const float aAcceptanceRadius, const float WalkSpeed);
+	void SetMoveToStateWithTarget(AActor* TargetActor, const float AcceptanceRadius, const float WalkSpeed);
 	// Move to a location, sets movetotarget to current character
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	void SetMoveToStateWithLocation(const FVector aLocation, const float WalkSpeed);
+	void SetMoveToStateWithLocation(const FVector Location, const float WalkSpeed);
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
 	bool IsMoveCompleted() { return _IsMoveCompleted; }
 
@@ -82,33 +85,33 @@ public:
 	// Helper function for the planner, fetch the valid actions for a given state
 	TArray<UGOAPAction*> GetValidActionsForState(const FGOAPState aState);
 	// Helper to check if a given state is satisfied by the current agent state
-	bool isStateSatisfied(const FGOAPAtom aState);
+	bool isStateSatisfied(const FGOAPStateProperty aState);
 	// Helper to check if a given state is satisfied by the current agent state
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	bool isStateSatisfied(FGOAPAtomKey Key, const bool Value);
+	bool isStateSatisfied(FGOAPPropertyId Key, const bool Value);
 
 	// Callback for MoveTo completion
-	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+	virtual void OnMoveCompleted(FAIRequestID aRequestID, const FPathFollowingResult& aResult) override;
 
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
 	FString GetCurrentActionString();
 	/** Sets the state of a single atom, creates the entry if it doesn't already exist **/
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	void SetGOAPState(FGOAPAtomKey Key, bool Value);
+	void SetGOAPState(FGOAPPropertyId Key, bool Value);
 	/** Gets the state of a single atom **/
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	bool GetGOAPState(FGOAPAtomKey Key);
+	bool GetGOAPState(FGOAPPropertyId Key);
 	/** Set the current active goal **/
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	void SetGOAPGoal(FGOAPAtomKey Key, bool Value);
+	void SetGOAPGoal(FGOAPPropertyId Key, bool Value);
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
-	bool IsGoalSet(FGOAPAtomKey Key, bool Value);
+	bool IsGoalSet(FGOAPPropertyId Key, bool Value);
 
 	UFUNCTION(BlueprintCallable, Category = "GOAP")
 	void AddEQSJob(UGOAPAction* CallingAction, UEnvQuery* Query, TEnumAsByte<EEnvQueryRunMode::Type> RunMode);
 	void EQSQueryFinished(TSharedPtr<FEnvQueryResult> Result);
 
 	// Weak pointer to MoveToTarget, used when moving to an actor to abort if the target is destroyed
-	TWeakObjectPtr<AActor> MoveToTargetActor;
+	TWeakObjectPtr<AActor> myMoveToTargetActor;
 
 };

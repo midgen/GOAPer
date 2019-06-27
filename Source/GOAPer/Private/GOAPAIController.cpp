@@ -6,23 +6,23 @@
 
 bool AGOAPAIController::LoadGOAPDefaults()
 {
-	CurrentGoal = DefaultGoal;
+	myCurrentGoal = DefaultGoal;
 
 	// Create the actions
 	for (TSubclassOf<UGOAPAction> elem : AvailableActions)
 	{
-		GOAPActions.Add(NewObject<UGOAPAction>(this, elem));
+		myGOAPActions.Add(NewObject<UGOAPAction>(this, elem));
 	}
 
-	for (auto& action : GOAPActions)
+	for (auto& action : myGOAPActions)
 	{
 		action->SetupDefaults();
 	}
 
 	// Load default state
-	for (FGOAPAtom& state : StartingState.State)
+	for (FGOAPStateProperty& state : StartingState.State)
 	{
-		GOAPState.SetState(state.Key, state.Value);
+		myGOAPState.SetState(state.Key, state.Value);
 	}
 
 	return true;
@@ -47,24 +47,24 @@ void AGOAPAIController::Tick(float DeltaTime)
 	if (CurrentAction == nullptr)
 	{
 		// If there's nothing queued, we need to try and form a plan
-		if (ActionQueue.IsEmpty())
+		if (myActionQueue.IsEmpty())
 		{
 			// If we can form a plan
 			if (BuildActionPlanForCurrentGoal())
 			{
 				// If the goal is already satisfied, trash the queue, we'll try another one next tick
-				if (isStateSatisfied(CurrentGoal))
+				if (isStateSatisfied(myCurrentGoal))
 				{
-					ActionQueue.Empty();
+					myActionQueue.Empty();
 					return;
 				}
 				// Select the head action
-				ActionQueue.Dequeue(CurrentAction);
+				myActionQueue.Dequeue(CurrentAction);
 			}
 		}
 		else // otherwise pop the next action off the queue
 		{
-			ActionQueue.Dequeue(CurrentAction);
+			myActionQueue.Dequeue(CurrentAction);
 		}
 	}
 	if (CurrentAction->IsValidLowLevel()) // Should have an action by now, check anyway
@@ -73,7 +73,7 @@ void AGOAPAIController::Tick(float DeltaTime)
 		if (!CurrentAction->ArePreconditionsSatisfied(this))
 		{
 			CurrentAction = nullptr;
-			ActionQueue.Empty();
+			myActionQueue.Empty();
 		}
 		// If effects are satisfied, just complete the action without clearing plan
 		else if (CurrentAction->AreEffectsSatisfied(this))
@@ -90,6 +90,8 @@ void AGOAPAIController::Tick(float DeltaTime)
 				// Run the action, if it returns true, it's complete,
 				if (CurrentAction->Execute(this, DeltaTime))
 				{
+					// Apply the effects to our state
+					myGOAPState += CurrentAction->Effects_Internal;
 					// And clear the action so the next will be popped from the queue on next tick
 					CurrentAction = nullptr;
 				}
@@ -98,7 +100,7 @@ void AGOAPAIController::Tick(float DeltaTime)
 	}
 
 	// Check for action cost update ticks
-	for (auto& action : GOAPActions)
+	for (auto& action : myGOAPActions)
 	{
 		action->TimeSinceLastCostUpdate += DeltaTime;
 		if (action->TimeSinceLastCostUpdate > action->CostUpdateRate)
@@ -110,15 +112,28 @@ void AGOAPAIController::Tick(float DeltaTime)
 
 	// Process EQS Jobs
 	// If we don't have an active job
-	if (!EQSCurrentJob.CallingAction.IsValid())
+	if (!myEQSCurrentJob.CallingAction.IsValid())
 	{
 		// See if we have any waiting
-		if (EQSJobs.Dequeue(EQSCurrentJob))
+		if (myEQSJobs.Dequeue(myEQSCurrentJob))
 		{
-			EQSRequest = FEnvQueryRequest(EQSCurrentJob.Query, GetCharacter());
-			EQSRequest.Execute(EQSCurrentJob.RunMode, this, &AGOAPAIController::EQSQueryFinished);
+			myEQSRequest = FEnvQueryRequest(myEQSCurrentJob.Query, GetCharacter());
+			myEQSRequest.Execute(myEQSCurrentJob.RunMode, this, &AGOAPAIController::EQSQueryFinished);
 		}
 	}
+
+	if (DebugDrawCurrentState)
+	{
+		FString text = TEXT("Current State: \n");
+
+		for (const TWorldProperty& prop : myGOAPState.State)
+		{
+			text += *mySettings->GetStringForByte(prop.Key) + "  :  " + (prop.Value ? "X" : "O") + "\n";
+
+		}
+		DrawDebugString(GetWorld(), GetPawn()->GetActorLocation(), text, GetPawn(), FColor::White, 0.01f);
+	}
+		
 }
 
 void AGOAPAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
@@ -133,12 +148,12 @@ void AGOAPAIController::ClearCurrentActionAndPlan()
 {
 	// clearing the action and queue will cause IdleState to form a new plan
 	CurrentAction = nullptr;
-	ActionQueue.Empty();
+	myActionQueue.Empty();
 }
 
-void AGOAPAIController::SetMoveToStateWithTarget(AActor* aTargetActor, const float aAcceptanceRadius, const float WalkSpeed)
+void AGOAPAIController::SetMoveToStateWithTarget(AActor* TargetActor, const float AcceptanceRadius, const float WalkSpeed)
 {
-	if (!aTargetActor)
+	if (!TargetActor)
 	{
 		return;
 	}
@@ -146,32 +161,32 @@ void AGOAPAIController::SetMoveToStateWithTarget(AActor* aTargetActor, const flo
 	DrawDebugLine(
 		GetWorld(),
 		GetPawn()->GetActorLocation(),
-		aTargetActor->GetActorLocation(),
+		TargetActor->GetActorLocation(),
 		FColor(0, 0, 255),
 		true, 1.0f, 0,
 		12.333
 		);
 
 	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-	MoveToActor(aTargetActor, aAcceptanceRadius);
-	MoveToTargetActor = aTargetActor;
+	MoveToActor(TargetActor, AcceptanceRadius);
+	myMoveToTargetActor = TargetActor;
 	_IsMoveCompleted = false;
 }
 
-void AGOAPAIController::SetMoveToStateWithLocation(const FVector aLocation, const float WalkSpeed)
+void AGOAPAIController::SetMoveToStateWithLocation(const FVector Location, const float WalkSpeed)
 {
 	DrawDebugLine(
 		GetWorld(),
 		GetPawn()->GetActorLocation(),
-		aLocation,
+		Location,
 		FColor(0, 255, 0),
 		true, 1.0f, 0,
 		12.333
 		);
 	// Set to self to avoid failing null checks
-	MoveToTargetActor = GetCharacter();
+	myMoveToTargetActor = GetCharacter();
 	GetCharacter()->GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;	
-	MoveToLocation(aLocation, -1.0f);
+	MoveToLocation(Location, -1.0f);
 	_IsMoveCompleted = false;
 }
 
@@ -180,7 +195,7 @@ bool AGOAPAIController::BuildActionPlanForCurrentGoal()
 	TArray<TWeakObjectPtr<UGOAPAction>> planActions;
 
 	// TODO: We only support single state goals right now, awaiting planner upgrade
-	FGOAPAtom targetState = CurrentGoal;
+	FGOAPStateProperty targetState = myCurrentGoal;
 
 	// The goal is already satisfied, discard it
 	if (isStateSatisfied(targetState))
@@ -189,22 +204,16 @@ bool AGOAPAIController::BuildActionPlanForCurrentGoal()
 	}
 
 	// Make a plan!
-	planActions = Planner->Plan(this, MaxGraphNodes, targetState.Key, targetState.Value, &GOAPActions, &GOAPState, *this);
-
-	// If we find one, push it into the Action Queue
-	if (planActions.Num() > 0)
+	if (Planner->Plan(this, MaxGraphNodes, targetState.Key, targetState.Value, myGOAPActions, myGOAPState, *this, planActions))
 	{
 		for (int i = 0; i < planActions.Num(); ++i)
 		{
-			ActionQueue.Enqueue(planActions[i]);
+			myActionQueue.Enqueue(planActions[i]);
 		}
-	}
-	else
-	{
-		return false;
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 
@@ -222,33 +231,27 @@ FString AGOAPAIController::GetCurrentActionString()
 
 
 
-void AGOAPAIController::SetGOAPState(FGOAPAtomKey Key, bool Value)
+void AGOAPAIController::SetGOAPState(FGOAPPropertyId Key, bool Value)
 {
-	GOAPState.SetState(Key.Key, Value);
+	myGOAPState.SetState(Key.Key, Value);
 }
 
-bool AGOAPAIController::GetGOAPState(FGOAPAtomKey Key)
+bool AGOAPAIController::GetGOAPState(FGOAPPropertyId Key)
 {
-	if (GOAPState.State.Contains(Key.Key))
-	{
-		return *GOAPState.State.Find(Key.Key);
-	}
-	else {
-		// This is not ideal, but will do for now
-		return false;
-	}
+	return myGOAPState.GetPropertyValue(Key.Key);
+
 }
 
-void AGOAPAIController::SetGOAPGoal(FGOAPAtomKey Key, bool Value)
+void AGOAPAIController::SetGOAPGoal(FGOAPPropertyId Key, bool Value)
 {
-	CurrentGoal.Key = Key.Key;
-	CurrentGoal.Value = Value;
+	myCurrentGoal.Key = Key.Key;
+	myCurrentGoal.Value = Value;
 	ClearCurrentActionAndPlan();
 }
 
-bool AGOAPAIController::IsGoalSet(FGOAPAtomKey Key, bool Value)
+bool AGOAPAIController::IsGoalSet(FGOAPPropertyId Key, bool Value)
 {
-	if (CurrentGoal.Key == Key.Key && CurrentGoal.Value == Value)
+	if (myCurrentGoal.Key == Key.Key && myCurrentGoal.Value == Value)
 	{
 		return true;
 	}
@@ -262,40 +265,40 @@ void AGOAPAIController::AddEQSJob(UGOAPAction* CallingAction, UEnvQuery* Query, 
 	job.CallingAction = CallingAction;
 	job.Query = Query;
 	job.RunMode = RunMode;
-	EQSJobs.Enqueue(job);
+	myEQSJobs.Enqueue(job);
 }
 
 void AGOAPAIController::EQSQueryFinished(TSharedPtr<FEnvQueryResult> Result)
 {
-	if (EQSCurrentJob.CallingAction->IsValidLowLevel())
+	if (myEQSCurrentJob.CallingAction->IsValidLowLevel())
 	{
-		EQSCurrentJob.CallingAction->QueryResultsActor.Empty();
-		EQSCurrentJob.CallingAction->QueryResultsLocation.Empty();
-		if (EQSCurrentJob.RunMode == EEnvQueryRunMode::SingleResult)
+		myEQSCurrentJob.CallingAction->QueryResultsActor.Empty();
+		myEQSCurrentJob.CallingAction->QueryResultsLocation.Empty();
+		if (myEQSCurrentJob.RunMode == EEnvQueryRunMode::SingleResult)
 		{
-			EQSCurrentJob.CallingAction->QueryResultsActor.Add(Result->GetItemAsActor(0));
-			EQSCurrentJob.CallingAction->QueryResultsLocation.Add(Result->GetItemAsLocation(0));
+			myEQSCurrentJob.CallingAction->QueryResultsActor.Add(Result->GetItemAsActor(0));
+			myEQSCurrentJob.CallingAction->QueryResultsLocation.Add(Result->GetItemAsLocation(0));
 		}
 		else
 		{
-			Result->GetAllAsActors(EQSCurrentJob.CallingAction->QueryResultsActor);
-			Result->GetAllAsLocations(EQSCurrentJob.CallingAction->QueryResultsLocation);
+			Result->GetAllAsActors(myEQSCurrentJob.CallingAction->QueryResultsActor);
+			Result->GetAllAsLocations(myEQSCurrentJob.CallingAction->QueryResultsLocation);
 		}
 
-		EQSCurrentJob.CallingAction->IsEQSResultsAvailable = true;
-		EQSCurrentJob.CallingAction = nullptr;
-		EQSRequest = nullptr;
+		myEQSCurrentJob.CallingAction->IsEQSResultsAvailable = true;
+		myEQSCurrentJob.CallingAction = nullptr;
+		myEQSRequest = nullptr;
 	}
 
 }
 
-TArray<UGOAPAction*> AGOAPAIController::GetValidActionsForState(const FGOAPState aState)
+TArray<UGOAPAction*> AGOAPAIController::GetValidActionsForState(const FGOAPState State)
 {
 	TArray<UGOAPAction*> result;
 
-	for (auto& action : GOAPActions)
+	for (auto& action : myGOAPActions)
 	{
-		if (action->PreConditions_Internal.IsSatisfiesState(aState))
+		if (action->PreConditions_Internal.SatisfiesState(State))
 		{
 			result.Push(action);
 		}
@@ -304,12 +307,12 @@ TArray<UGOAPAction*> AGOAPAIController::GetValidActionsForState(const FGOAPState
 	return result;
 }
 
-bool AGOAPAIController::isStateSatisfied(FGOAPAtom aAtom)
+bool AGOAPAIController::isStateSatisfied(FGOAPStateProperty Atom)
 {
-	return GOAPState.IsStateSatisfied(aAtom.Key, aAtom.Value);
+	return myGOAPState.SatisfiesProperty(Atom.Key, Atom.Value);
 }
 
-bool AGOAPAIController::isStateSatisfied(FGOAPAtomKey Key, bool Value)
+bool AGOAPAIController::isStateSatisfied(FGOAPPropertyId Key, bool Value)
 {
-	return GOAPState.IsStateSatisfied(Key.Key, Value);
+	return myGOAPState.SatisfiesProperty(Key.Key, Value);
 }
