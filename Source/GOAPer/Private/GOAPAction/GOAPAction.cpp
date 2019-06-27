@@ -23,7 +23,7 @@ bool UGOAPAction::ArePreconditionsSatisfied(AGOAPAIController* controller)
 bool UGOAPAction::IsInRange(AGOAPAIController* controller)
 {
 	// Otherwise, check the distance against the interaction range
-	return ((ActionTarget !=  nullptr) && (controller->GetPawn()->GetActorLocation() - ActionTarget->GetActorLocation()).Size() < InteractionRange);
+	return ((ActionTarget !=  nullptr) && (controller->GetPawn()->GetActorLocation() - ActionTarget->GetActorLocation()).SizeSquared() < (InteractionRange * InteractionRange));
 }
 
 bool UGOAPAction::AreEffectsSatisfied(AGOAPAIController* controller)
